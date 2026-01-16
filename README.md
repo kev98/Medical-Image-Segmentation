@@ -112,11 +112,11 @@ To set up a complete training pipeline, follow these steps:
 
 - [**Create a Dataset Class**](#creating-a-new-dataset): Inherit from [BaseDataset3D](#base-dataset3dpy) or [BaseDataset2DSliced](#base-dataset2d-slicedpy) and implement the required abstract methods. 
 
-- [**Implement a Model**](#adding-custom-models): Create your custom model by inheriting from [BaseModel](#base-modelpy) and implementing the `forward()` method. Refer to [Adding Custom Models](#adding-custom-models) for guidance.
+- [**Implement a Model**](#adding-custom-models): Create your custom model by inheriting from [BaseModel](#base-modelpy) and implementing the `forward()` method.
 
 - [**Implement a Trainer**](#implementing-a-custom-trainer): Create a custom trainer by inheriting from [BaseTrainer](#base-trainerpy) and implementing `_train_epoch()` and `eval_epoch()` methods.
 
-- **Create an Entrypoint**: Write a `main.py` file (or similar) that loads your configuration and instantiates your trainer. Use the provided [main.py](main.py) as a template or reference.
+- **Create an Entrypoint**: Write a `main.py` file that loads your configuration and instantiates your trainer. Use the provided [main.py](main.py) as a template or reference.
 
 
 
