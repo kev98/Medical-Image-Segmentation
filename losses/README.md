@@ -1,6 +1,6 @@
 # Losses
 
-## 🎯 `LossFactory.py`
+## 🎯 [`LossFactory.py`](LossFactory.py)
 Creates loss functions from config. Supports [MONAI losses](https://monai.readthedocs.io/en/1.4.0/losses.html) out-of-the-box.
 
 ## Adding Custom Losses

@@ -1,7 +1,7 @@
 # Transforms
 
-## 🌀 `TransformsFactory.py`
-Creates TorchIO transform pipelines from JSON config.
+## 🌀 [`TransformsFactory.py`](TransformsFactory.py)
+Creates [TorchIO transform](https://docs.torchio.org/transforms/transforms.html) pipelines from JSON config.
 
 **Supported:**
 - TorchIO preprocessing transforms (resampling, cropping, etc.)

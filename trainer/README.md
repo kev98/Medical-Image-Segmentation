@@ -25,4 +25,4 @@ Trainer for 2D slice-based segmentation.
    ```python
    from .YourTrainer import YourTrainer
    ```
-5. Use it by specifying `--trainer YourTrainer` when running `main.py`, or let it auto-detect based on your dataset type
+5. Use it by specifying `--trainer YourTrainer` when running `main.py`.

@@ -1,6 +1,6 @@
 # Datasets
 
-## 📁 [DatasetFactory.py](DatasetFactory.py)
+## 📁 [`DatasetFactory.py`](DatasetFactory.py)
 Factory pattern for creating dataset instances from config. The factory searches for dataset classes in the `datasets/` folder by looking up the dataset name in the module's namespace.
 
 ## Creating a New Dataset

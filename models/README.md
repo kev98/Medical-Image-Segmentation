@@ -1,6 +1,6 @@
 # Models
 
-## 🧠 [ModelFactory.py](ModelFactory.py)
+## 🧠 [`ModelFactory.py`](ModelFactory.py)
 Creates model instances from config. The factory searches for model classes in the `models/` folder by looking up the dataset name in the module's namespace.
 
 ## Available Models

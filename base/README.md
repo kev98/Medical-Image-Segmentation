@@ -2,7 +2,7 @@
 
 The `base/` directory contains abstract base classes that define the core interfaces for datasets, models, and trainers. These classes are designed to be inherited and customized for your specific use case, providing a consistent architecture across the framework.
 
-## 💭 [base_dataset3d.py](base/base_dataset3d.py)
+## 💭 [base_dataset3d.py](base_dataset3d.py)
 Base class for 3D volume datasets, which Loads train/validation/test image and label paths, creates TorchIO `SubjectsDataset` for each split, and initialize all the other component needed to process the dataset.
 
 **Abstract Methods (Must Implement):**
@@ -14,7 +14,7 @@ Base class for 3D volume datasets, which Loads train/validation/test image and l
 - `_get_patch_loader(dataset)`: Returns a patch-based loader using TorchIO Queue for training
 - `_get_volume_loader(dataset)`: Returns a loader for entire volumes (used in validation/testing)
 
-## 💭 [base_dataset2d_sliced.py](base/base_dataset2d_sliced.py)
+## 💭 [base_dataset2d_sliced.py](base_dataset2d_sliced.py)
 Base class for 2D slice-based training from 3D volumes, which loads train/validation/test image and label paths, creates TorchIO `SubjectsDataset` of slices from the 3D dataset, and initialize all the other component needed to process the dataset.
 
 **Abstract Methods (Must Implement):**
@@ -26,7 +26,7 @@ Base class for 2D slice-based training from 3D volumes, which loads train/valida
 - Constructor handles train/val/test split initialization using the slice indices
 - `BaseSet2D` dataset wrapper for handling 2D slices from 3D volumes
 
-## 💭 [base_model.py](base/base_model.py)
+## 💭 [base_model.py](base_model.py)
 Simple wrapper around `nn.Module` for consistency. Inherit from this when creating custom models.
 
 **Abstract Methods (Must Implement):**
@@ -35,7 +35,7 @@ Simple wrapper around `nn.Module` for consistency. Inherit from this when creati
 **Implemented Methods (Provided):**
 - `__str__()`: Displays model summary with trainable parameter count
 
-## 💭 [base_trainer.py](base/base_trainer.py)
+## 💭 [base_trainer.py](base_trainer.py)
 Base trainer class handling:
 - Model, optimizer, scheduler, loss, and metrics initialization
 - Dataset loading with transforms
