@@ -27,7 +27,7 @@ A flexible PyTorch-based framework for training 2D and 3D medical image segmenta
 Brain-Segmentation/
 ├── base/                    # Abstract base classes
 │   ├── base_dataset2d_sliced.py
-│   ├── base_dataset3d.py
+│   ├── base_dataset.py
 │   ├── base_model.py
 │   └── base_trainer.py
 ├── config/                  # Configuration files for training and transforms
@@ -111,7 +111,7 @@ python main.py \
 
 To set up a complete training pipeline, follow these steps:
 
-- [**Create a Dataset Class**](datasets/README.md#creating-a-new-dataset): Inherit from [BaseDataset3D](base/README.md#base-dataset3dpy) or [BaseDataset2DSliced](base/README.md#base-dataset2d-slicedpy) and implement the required abstract methods.
+- [**Create a Dataset Class**](datasets/README.md#creating-a-new-dataset): Inherit from [BaseDataset](base/README.md#base-datasetpy) or [BaseDataset2DSliced](base/README.md#base-dataset2d-slicedpy) and implement the required abstract methods.
 
 - [**Implement a Model**](models/README.md#adding-custom-models): Create your custom model by inheriting from [BaseModel](base/README.md#base-modelpy) and implementing the `forward()` method.
 

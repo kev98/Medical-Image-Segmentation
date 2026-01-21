@@ -1,10 +1,10 @@
 from typing import Tuple, List
 import os
-from base import BaseDataset3D
+from base import BaseDataset
 import random
 import json
 
-class ATLAS(BaseDataset3D):
+class ATLAS(BaseDataset):
     """
     Class for ATLAS 2.0 dataset creation and loading
     """
@@ -76,9 +76,8 @@ class ATLAS(BaseDataset3D):
             return self._get_patch_loader(self.train_set, batch_size=self.config.dataset['batch_size'])
         elif split == 'val':
             if self.validation:
-                return self._get_volume_loader(self.val_set, batch_size=1)
+                return self._get_entire_loader(self.val_set, batch_size=1)
             else:
                 return
         elif split == 'test':
-            return self._get_volume_loader(self.test_set, batch_size=1)
-
+            return self._get_entire_loader(self.test_set, batch_size=1)

@@ -6,7 +6,7 @@ from typing import List, Tuple
 
 
 # TODO: k-fold cross validation
-class BaseDataset3D:
+class BaseDataset:
 
     if 'SLURM_CPUS_PER_TASK' in os.environ:
         NUM_WORKERS = int(os.environ['SLURM_CPUS_PER_TASK'])
@@ -85,7 +85,7 @@ class BaseDataset3D:
         )
         return loader
 
-    # return a SubjectsLoader (dataloader of TorchIO) which use entire volumes
+    # return a SubjectsLoader (dataloader of TorchIO) which use entire volumes/image
     def _get_entire_loader(self, dataset: tio.SubjectsDataset, batch_size: int = 1):
 
         loader = tio.SubjectsLoader(
