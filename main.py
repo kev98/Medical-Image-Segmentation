@@ -55,7 +55,18 @@ def parse_args():
         action='store_true',
         help='Enable debug mode'
     )
-    
+    parser.add_argument(
+        '--eval_metric_type',
+        type=str,
+        default='mean',
+        choices=['mean', 'aggregated_mean'],
+        help='Metric type to use for model selection: "mean" for per-class mean of the first metric, "aggregated_mean" for aggregated regions mean of the first metric'
+    )    
+    parser.add_argument(
+        '--wandb',
+        action='store_true',
+        help='Enable Weights & Biases logging'
+    )    
     return parser.parse_args()
 
 
@@ -81,17 +92,13 @@ def main():
     trainer_instance = TrainerClass(
         config=config,
         epochs=args.epochs,
-         validation=args.validation,
+        validation=args.validation,
         save_path=args.save_path,
         resume=args.resume,
-        debug=args.debug
+        debug=args.debug,
+        eval_metric_type=args.eval_metric_type,
+        use_wandb=args.wandb
     )
-    
-    print(f"\nStarting training for {args.epochs} epochs...")
-    print(f"Validation: {'Enabled' if args.validation else 'Disabled'}")
-    print(f"Resume: {'Yes' if args.resume else 'No'}")
-    print(f"Debug mode: {'Enabled' if args.debug else 'Disabled'}")
-    
     try:
         trainer_instance.train()
         print("\n" + "="*50)

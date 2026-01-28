@@ -28,7 +28,7 @@ class BaseTrainer:
     """
     # Mandatory parameters not specified in the config file, must be passed as CL params when calling the main.py
     # If too many params it is possible to specify them in another file
-    def __init__(self, config, epochs, validation, save_path, resume=False, debug=False, **kwargs):
+    def __init__(self, config, epochs, validation, save_path, resume=False, debug=False, eval_metric_type='mean', use_wandb=False, **kwargs):
         """
         Initialize the Trainer with model, optimizer, scheduler, loss, metrics and weights using the config file
         """
@@ -36,6 +36,9 @@ class BaseTrainer:
         self.debug = debug
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.validation = validation
+        self.eval_metric_type = eval_metric_type
+        self.use_wandb = use_wandb
+        self.wandb_run_id = None
 
         self.model = ModelFactory.create_instance(self.config).to(self.device)
 
@@ -58,11 +61,6 @@ class BaseTrainer:
             self.val_metrics = MetricsManager(self.config, "val", **val_metrics_dict)
         self.test_metrics = MetricsManager(self.config, "test", **test_metrics_dict)
 
-        '''self.metrics = {}
-        self.metrics.update(test_metrics_dict)
-        self.metrics.update(train_metrics_dict)
-        self.metrics.update(val_metrics_dict)'''
-
         self.start_epoch = 1
         self.epochs = epochs
         self.save_period = 1
@@ -75,6 +73,9 @@ class BaseTrainer:
 
         self._init_transforms()
         self._init_dataset()
+
+        if self.use_wandb and not self.resume:
+            self._init_wandb()
 
         # Handle checkpoint resuming
         if self.resume:
@@ -125,6 +126,44 @@ class BaseTrainer:
         else:
             self.val_loader = None
 
+    def _init_wandb(self, resume_id=None):
+        """
+        Initialize Weights & Biases logging.
+        
+        :param resume_id: Optional run ID to resume an existing W&B run
+        """
+        if not self.use_wandb:
+            return
+
+        wandb_project = os.environ.get('WANDB_PROJECT', 'medical-segmentation')
+        wandb_entity = os.environ.get('WANDB_ENTITY', None)
+        config_dict = {k: v for k, v in self.config.__dict__.items() if not k.startswith('_')}
+        
+        if resume_id:
+            # Resume existing run
+            # Note: When resuming, the project name must match the original run's project
+            # W&B will validate this automatically and raise an error if there's a mismatch
+            wandb.init(
+                entity=wandb_entity,
+                project=wandb_project,
+                name=self.config.name,
+                id=resume_id,
+                resume="must",
+                config=config_dict
+            )
+            print(f"Resumed W&B run: {self.config.name} (ID: {resume_id})")
+            print(f"Entity: {wandb_entity}, Project: {wandb_project}")
+        else:
+            wandb.init(
+                entity=wandb_entity,
+                project=wandb_project,
+                name=self.config.name,
+                config=config_dict
+            )
+            self.wandb_run_id = wandb.run.id
+            print(f"Started W&B run: {self.config.name} (ID: {self.wandb_run_id})")
+            print(f"Entity: {wandb_entity}, Project: {wandb_project}")
+
     @abstractmethod
     def _train_epoch(self, epoch):
         """
@@ -157,6 +196,7 @@ class BaseTrainer:
             'lr_scheduler': self.lr_scheduler.state_dict() if self.lr_scheduler is not None else None,
             'epoch': epoch,
             'best_metric': self.best_metric,
+            'wandb_run_id': self.wandb_run_id if self.use_wandb else None,
         }
 
         checkpoint_path = os.path.join(self.save_path, 'model_last.pth')
@@ -204,19 +244,13 @@ class BaseTrainer:
         if self.validation:
             self.val_metrics.load_from_csv(self.save_path)
 
-        # TODO: Check the meaning of this part and if it is required
-        '''
-        # Handle W&B resuming
-        if wandb.run is not None:
-            # If already initialized, resume the run
-            wandb.config.update({'resume': True, 'resume_epoch': self.start_epoch}, allow_val_change=True)
-            print("Resumed W&B run.")
-        else:
-            # Initialize W&B with resume flag
-            wandb.init(project=self.config.name, resume='allow')
-            wandb.config.update({'resume': True, 'resume_epoch': self.start_epoch})
-            print("Initialized W&B run with resume.")
-        '''
+        if self.use_wandb:
+            self.wandb_run_id = checkpoint.get('wandb_run_id', None)
+            if self.wandb_run_id:
+                self._init_wandb(resume_id=self.wandb_run_id)
+            else:
+                print("Warning: No W&B run ID found in checkpoint. Starting new run.")
+                self._init_wandb()
 
     def train(self):
         """
@@ -230,17 +264,31 @@ class BaseTrainer:
             if self.debug:
                 print(epoch_results)
             
+            if self.use_wandb:
+                self.train_metrics.log_to_wandb(epoch)
+            
             save_best = False
             if epoch % self.save_period == 0:
                 if self.validation:
                     _val_metrics = self.eval_epoch(epoch, 'val')
+                    if self.use_wandb:
+                        self.val_metrics.log_to_wandb(epoch)
+                    
                     #val_metric = _val_metrics[list(self.metrics.keys())[0]]
-                    eval_metric_value = _val_metrics[self.eval_metric][f'{self.eval_metric}_mean']
+                    metric_key = f'{self.eval_metric}_{self.eval_metric_type}'
+                    eval_metric_value = _val_metrics[self.eval_metric][metric_key]
                     if eval_metric_value > self.best_metric:
                         self.best_metric = eval_metric_value
                         save_best = True
+                        print(f'New best {metric_key}: {self.best_metric:.4f}')
 
             self._save_checkpoint(epoch, save_best=save_best)
 
             if epoch == self.epochs:
                 self.eval_epoch(epoch, 'test')
+                if self.use_wandb:
+                    self.test_metrics.log_to_wandb(epoch)
+        
+        if self.use_wandb:
+            wandb.finish()
+            print("W&B run finished.")

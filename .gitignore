@@ -112,7 +112,12 @@ slurm_out/
 sbatch_files/
 metrics/metrics.csv
 config/config.json
-
+datalist/
+BraTS_stuffs/
+requirements_old.txt
+debug.sh
+run.sh
+wandb/
 
 # editor, os cache directory
 .vscode/

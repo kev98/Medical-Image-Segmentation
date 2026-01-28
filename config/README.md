@@ -21,6 +21,11 @@ Defines model, dataset, training parameters, optimizer, loss, and metrics. This 
   },
   
   "classes":{"0": name_class_0, "1": name_class_1, ...},
+  
+  "aggregated_regions": { <-- optional: define aggregated regions for metrics
+    "region_name_1": [1, 2],  <-- e.g., combine classes 1 and 2
+    "region_name_2": [1, 2, 3]  <-- e.g., combine classes 1, 2, and 3
+  },
 
   "loss": {"name": "DiceLoss", "loss_kwargs": {...}},
   "optimizer": {"name": "Adam", ...},
@@ -53,7 +58,7 @@ Specifies preprocessing and augmentation pipelines using TorchIO transforms (to 
 ### Best model selection (`model_best.pth`)
 The best checkpoint is selected using the **validation** value of the **first metric** in the `metrics` list (if *--validation* flag is passed to the [main.py](/main.py)).
 
-- The metric being tracked is the `"<key>_mean"` value (mean across classes and validation data)
+- The metric being tracked can be either `"<key>_mean"` (mean across classes) or `"<key>_aggregated_mean"` (mean across aggregated regions), controlled by the `--eval_metric_type` parameter
 - It is assumed to be **maximized** (higher is better)
 
-For example, if the first entry has `"key": "DSC"`, the trainer tracks `DSC_mean` on the validation set.
+For example, if the first entry has `"key": "DSC"`, the trainer tracks either `DSC_mean` or `DSC_aggregated_mean` on the validation set, depending on the selected evaluation metric type.

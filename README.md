@@ -92,19 +92,28 @@ Command line arguments implemented in the provided main.py file:
 - `--config`: Path to configuration JSON file (required)
 - `--epochs`: Number of training epochs (required)
 - `--save_path`: Directory to save model checkpoints (required)
+- `--trainer`: Trainer class name (required)
 - `--validation`: Enable validation during training (flag)
 - `--resume`: Resume training from last checkpoint (flag)
 - `--debug`: Enable debug mode with verbose output (flag)
+- `--eval_metric_type`: Metric type for model selection - `mean` (per-class mean) or `aggregated_mean` (aggregated regions mean) (default: `mean`)
+- `--wandb`: Enable Weights & Biases logging (flag). Run name will be `config.name`. Set project and entity with environment variables: `export WANDB_ENTITY="your_entity"` and `export WANDB_PROJECT="your_project"`
 
 Example of launch of main.py, training a 3D segmentation model, resuming checkpoints,
 
 ```bash
+source /path_to_your_venv/bin/activate
+export WANDB_ENTITY="name_of_your_entity"
+export WANDB_PROJECT="name_of_your_project"
+
 python main.py \
   --config config/config_atlas.json \
   --epochs 100 \
   --save_path /folder_containing_model_last.pth \
+  --trainer trainer_3D \
   --validation \
-  --resume
+  --resume \
+  --wandb
 ```
 
 ### Implement Your Own Training
