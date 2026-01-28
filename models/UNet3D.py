@@ -101,7 +101,7 @@ class UNet3D(BaseModel):
         pre_padding = (x.size(-1) % 2**self.depth != 0) or (x.size(-2) % 2**self.depth != 0) or (x.size(-3) % 2**self.depth != 0)
         if pre_padding:
             x, pads = pad_to_3d(x, 2**self.depth)
-            print(x.size())
+            #print(x.size())
 
         out, feat = self.encoder['0'](x)
         feat_list.append(feat)

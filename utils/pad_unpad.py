@@ -68,9 +68,9 @@ def unpad_2d(x: torch.Tensor, pads):
 
     return x
 
-inp = torch.randn(2, 3, 513, 505) 
-padded, pads = pad_to_2d(inp, stride=32)
-print(padded.shape)             
+#inp = torch.randn(2, 3, 513, 505) 
+#padded, pads = pad_to_2d(inp, stride=32)
+#print(padded.shape)             
 
-restored = unpad_2d(padded, pads)
-assert torch.allclose(restored, inp)
+#restored = unpad_2d(padded, pads)
+#assert torch.allclose(restored, inp)

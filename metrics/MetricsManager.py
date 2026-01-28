@@ -20,7 +20,6 @@ class MetricsManager:
         self.metrics = metrics # Dictionary containing the metric classes
         self.phase = phase
         self.config = config
-        print(self.config)
 
         self.num_classes = self.config.model['num_classes']
         if hasattr(config, 'classes'):

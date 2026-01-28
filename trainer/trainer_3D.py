@@ -10,7 +10,6 @@ from tqdm import tqdm
 import torchio as tio
 from collections import defaultdict
 import os
-from torch.utils.data import DataLoader
 from utils.util import _onehot_enc
 
 class Trainer_3D(BaseTrainer):
@@ -119,7 +118,7 @@ class Trainer_3D(BaseTrainer):
 
         num_workers = int(os.environ.get('SLURM_CPUS_PER_TASK', 1))
 
-        loader = DataLoader(
+        loader = tio.SubjectsLoader(
             grid_sampler,
             #num_workers=num_workers,
             num_workers=0, #to not have the warning 

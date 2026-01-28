@@ -29,6 +29,7 @@ class MetricsFactory:
             if phase not in ("train", "val", "test"):
                 raise ValueError(f"`phase` must be one of ('train','val','test'), got: {phase}")
 
+        print(f"Instantiating metrics for {phase} phase")
         metrics_dict = {}
         for spec in metric_specs:
             if not isinstance(spec, dict) or "name" not in spec:
