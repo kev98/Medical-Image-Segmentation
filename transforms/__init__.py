@@ -1,2 +1,2 @@
 from .TransformsFactory import TransformsFactory
-from .QaTaCov import QaTaCov
+from .QaTaCov_preprocess import QaTaCov

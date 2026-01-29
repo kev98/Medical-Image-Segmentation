@@ -1,0 +1,31 @@
+{
+  "preprocessing": [],
+
+  "augmentations": [
+    {
+      "name": "RandomAffine",
+      "params": {
+        "scales": [0.98, 1.02],
+        "degrees": [-5, 5],
+        "translation": [-5, 5],
+        "image_interpolation": "linear",
+        "p": 0.5
+      }
+    },
+    {
+      "name": "RandomGamma",
+      "params": {
+        "log_gamma": [-0.1, 0.1],
+        "p": 0.3
+      }
+    },
+    {
+      "name": "RandomNoise",
+      "params": {
+        "mean": 0.0,
+        "std": [0.0, 0.02],
+        "p": 0.3
+      }
+    }
+  ]
+}
