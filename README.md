@@ -111,7 +111,7 @@ python main.py \
   --config config/config_atlas.json \
   --epochs 100 \
   --save_path /folder_containing_model_last.pth \
-  --trainer trainer_3D \
+  --trainer Trainer_3D \
   --validation \
   --val_every 2 \
   --resume \
