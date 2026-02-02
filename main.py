@@ -109,7 +109,8 @@ def main():
         debug=args.debug,
         eval_metric_type=args.eval_metric_type,
         save_visualizations = args.save_visualizations,
-        use_wandb=args.wandb
+        use_wandb=args.wandb,
+        val_every=args.val_every
     )
     try:
         trainer_instance.train()
