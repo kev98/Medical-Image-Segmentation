@@ -138,7 +138,7 @@ def test_brats3d():
 
 def test_qatacov():
     d = DatasetFactory()
-    c = Config("./config/config_qatacov2d.json")
+    c = Config("./config/config_qatacov2d_textemb.json")
     print(c)
 
     transforms_config = c.dataset['transforms']
@@ -169,6 +169,7 @@ def test_qatacov():
     image = sample['image']
     label = sample['label']
     text = sample['text']
+    text_emb = sample['text_emb']
     assert image.shape[0] == c.dataset['batch_size']
     assert image.shape == label.shape
 
@@ -176,11 +177,14 @@ def test_qatacov():
     label = (label[0].numpy() * 255).astype('uint8').squeeze()
 
     #save the first image and label
-    Image.fromarray(image).save("test_image_0.png")
-    Image.fromarray(label).save("test_label_0.png")
+    # Image.fromarray(image).save("test_image_0.png")
+    # Image.fromarray(label).save("test_label_0.png")
 
     print(image.shape, label.shape)
     print(text[0])
+    print(text_emb[0].shape)
+    print(text_emb[0])
+    print(text_emb.shape)
 
 if __name__ == '__main__':
     #test_atlas()

@@ -19,6 +19,8 @@ A flexible PyTorch-based framework for training 2D and 3D medical image segmenta
   - [Trainers](trainer/README.md)
   - [Transforms](transforms/README.md)
   - [Utils](utils/README.md)
+  - [Scripts](scripts/README.md)
+  - [Jobs](jobs/README.md)
 - [Notes](#notes)
 
 ## Project Structure
@@ -57,6 +59,9 @@ Brain-Segmentation/
 ├── utils/                   # Utility functions
 │   ├── util.py
 │   └── pad_unpad.py
+├── scripts/                 # Utility scripts (e.g., text embeddings)
+│   └── extract_textemb_biobert.py
+│   └── preprocess_qatacov.py
 ├── config.py               # Config file handler
 ├── main.py                 # Training entry point
 └── requirements.txt        # Python dependencies
