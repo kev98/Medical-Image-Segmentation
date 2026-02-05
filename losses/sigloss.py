@@ -58,7 +58,17 @@ class SigLoss(nn.Module):
         labels = 2 * torch.eye(B, device=logits.device, dtype=logits.dtype) - 1  # +1 diag, -1 off
 
 
-        loss = -F.logsigmoid(labels * logits).sum() / B
+        # version 1
+        loss = -F.logsigmoid(labels * logits)
+        masked_loss = (torch.eye(B, device=logits.device, dtype=logits.dtype) * loss).sum() / B #keep only positives
 
 
-        return loss
+        #version 2
+        # loss = -F.logsigmoid(labels * logits)
+        # mask = (report_idx[:, None] != report_idx[None, :]).float()
+        # mask += torch.eye(B, device=logits.device, dtype=logits.dtype)  # keep positives
+        # masked_loss = (mask * loss).sum() / mask.sum().clamp(min=1.0)
+
+
+
+        return masked_loss

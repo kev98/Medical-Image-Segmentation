@@ -1,5 +1,5 @@
 {
-    "name": "QaTaCOV_textemb",
+    "name": "QaTaCOV_textfulltrain_64-3_AdamW_l0.1-S1-V1",
     "n_gpu": 1,
 
     "dataset": {
@@ -7,7 +7,7 @@
         "path": "/leonardo_work/IscrC_narc2/reports_project/QaTa-COV19/QaTa-COV19-v2_preprocessed_gt",
         "split_file": "/leonardo_work/IscrC_narc2/reports_project/QaTa-COV19/QaTa-COV19-v2_preprocessed_gt/qatacov_split.xlsx",
         "text_emb_dir": "/leonardo_work/IscrC_narc2/reports_project/QaTa-COV19/Text_Embeddings/BioBERT",
-        "batch_size": 32,
+        "batch_size": 64,
         "image_size": [224, 224],
         "transforms": "config/qatacov2d_transforms.json"
     },
@@ -20,8 +20,7 @@
         "in_channels": 1,
         "num_classes": 2,
         "size": 32,
-        "depth": 5,
-        "emb_dim": 1024
+        "depth": 3
     },
     "loss": {
         "name": "CombinedSegSigLoss",
@@ -35,7 +34,6 @@
         "lambda_sig": 0.1,
 
         "sigloss_kwargs": {
-            "temperature_init": 0.07,
             "learnable_temperature": true,
             "learnable_bias": true
         }

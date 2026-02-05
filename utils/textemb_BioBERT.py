@@ -74,13 +74,18 @@ def precompute_unique_report_embeddings(
 
     # 2) Second pass: encode unique reports in batches
     all_emb = []
-    bs = 32  # encoding batch size; you can increase if GPU allows
+    bs = 64
+    token_counts = []
     for i in range(0, len(unique_reports), bs):
         chunk = unique_reports[i:i+bs]
         tok = tokenizer(
             chunk, padding=True, truncation=True, max_length=max_length, return_tensors="pt"
         )
         tok = {k: v.to(device) for k, v in tok.items()}
+        # count non-padded tokens per sequence in this chunk
+        if "attention_mask" in tok:
+            seq_counts = tok["attention_mask"].sum(dim=1).detach().cpu().numpy().tolist()
+            token_counts.extend(seq_counts)
         out = model(**tok)
         last_hidden = out.last_hidden_state  # [b,L,768]
 
@@ -96,6 +101,18 @@ def precompute_unique_report_embeddings(
     reports_emb = np.concatenate(all_emb, axis=0)  # [N_unique, 768]
     np.save(emb_path, reports_emb)
 
+    # Compute and save average number of tokens used per unique report (post-tokenization)
+    avg_tokens = None
+    total_tokens = None
+    if len(token_counts) > 0:
+        avg_tokens = float(np.mean(token_counts))
+        total_tokens = int(int(np.sum(token_counts)))
+        # write small text files with the aggregate stats
+        with open(os.path.join(save_directory, "avg_num_tokens.txt"), "w") as f:
+            f.write(str(avg_tokens))
+        with open(os.path.join(save_directory, "total_num_tokens.txt"), "w") as f:
+            f.write(str(total_tokens))
+
     # Save metadata + mappings
     meta = {
         "model_name": model_name,
@@ -103,6 +120,7 @@ def precompute_unique_report_embeddings(
         "pooling": pooling,
         "embedding_dim": int(reports_emb.shape[1]),
         "num_unique_reports": int(reports_emb.shape[0]),
+        "avg_num_tokens": (avg_tokens if avg_tokens is not None else None),
         "report_hash_to_idx": report_hash_to_idx,
     }
     with open(meta_path, "w") as f:
