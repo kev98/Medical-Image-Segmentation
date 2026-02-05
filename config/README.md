@@ -3,7 +3,7 @@
 Contains JSON configuration files organized in two types:
 
 **1. General Config (e.g., [config_atlas.json](config_atlas.json) and [config_brats2d.json](config_brats2d.json)):**
-Defines model, dataset, training parameters, optimizer, loss, and metrics. This must be pass as a parameter to the main.py
+Defines model, dataset, training parameters, optimizer, loss, and metrics. This must be pass as a parameter to the main.py.
 
 
 ```json
@@ -62,3 +62,23 @@ The best checkpoint is selected using the **validation** value of the **first me
 - It is assumed to be **maximized** (higher is better)
 
 For example, if the first entry has `"key": "DSC"`, the trainer tracks either `DSC_mean` or `DSC_aggregated_mean` on the validation set, depending on the selected evaluation metric type.
+
+---
+
+## QaTaCov + Text Embeddings Config
+
+[config_qatacov2d_textemb.json](config_qatacov2d_textemb.json) extends the standard configuration by adding `dataset.text_emb_dir` to point to a directory containing precomputed report embeddings:
+
+```
+dataset:
+  name: QaTaCovTextEmb
+  text_emb_dir: /path/to/Text_Embeddings/BioBERT
+```
+
+The dataset expects the embeddings directory to contain:
+
+- `reports_emb.npy`: NumPy array of BioBERT embeddings
+- `reports_meta.json`: metadata about the embeddings
+- `image_to_report_idx.json`: mapping from image stem to report index
+
+Use [scripts/extract_textemb_biobert.py](../scripts/extract_textemb_biobert.py) or the slurm job in `jobs/` to generate these files.
