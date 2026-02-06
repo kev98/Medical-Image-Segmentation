@@ -10,6 +10,8 @@ from tqdm import tqdm
 import json
 from transforms import TransformsFactory
 
+from PIL import Image
+
 def test_atlas():
     d = DatasetFactory()
     c = Config("/work/grana_neuro/Brain-Segmentation/config/config_atlas.json")
@@ -133,7 +135,59 @@ def test_brats3d():
         assert image.shape == label.shape == (c.dataset['batch_size'], 4, c.dataset['patch_size'], c.dataset['patch_size'], c.dataset['patch_size'])
         print(image.shape, label.shape)
 
+
+def test_qatacov():
+    d = DatasetFactory()
+    c = Config("./config/config_qatacov2d_textemb.json")
+    print(c)
+
+    transforms_config = c.dataset['transforms']
+    with open(transforms_config, 'r') as f:
+        transforms_config = json.load(f)
+
+    augmentation_transforms = TransformsFactory.create_instance(transforms_config.get('preprocessing', []), backend='monai')
+
+    if augmentation_transforms:
+        train_transforms = augmentation_transforms
+        test_transforms = None
+    else:
+        train_transforms = None
+        test_transforms = None
+
+    qatacov = d.create_instance(
+        config=c,
+        validation=True,
+        train_transforms=train_transforms,
+        test_transforms=test_transforms
+    )
+
+    train_loader = qatacov.get_loader('train')
+    val_loader = qatacov.get_loader('val')
+    test_loader = qatacov.get_loader('test')
+
+    sample = next(iter(train_loader))
+    image = sample['image']
+    label = sample['label']
+    text = sample['text']
+    text_emb = sample['text_emb']
+    assert image.shape[0] == c.dataset['batch_size']
+    assert image.shape == label.shape
+
+    image = (image[0].numpy() * 255).astype('uint8').squeeze()
+    label = (label[0].numpy() * 255).astype('uint8').squeeze()
+
+    #save the first image and label
+    # Image.fromarray(image).save("test_image_0.png")
+    # Image.fromarray(label).save("test_label_0.png")
+
+    print(image.shape, label.shape)
+    print(text[0])
+    print(text_emb[0].shape)
+    print(text_emb[0])
+    print(text_emb.shape)
+
 if __name__ == '__main__':
     #test_atlas()
     #test_BraTS2D()
-    test_brats3d()
+    #test_brats3d()
+    test_qatacov()

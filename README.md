@@ -19,6 +19,8 @@ A flexible PyTorch-based framework for training 2D and 3D medical image segmenta
   - [Trainers](trainer/README.md)
   - [Transforms](transforms/README.md)
   - [Utils](utils/README.md)
+  - [Scripts](scripts/README.md)
+  - [Jobs](jobs/README.md)
 - [Notes](#notes)
 
 ## Project Structure
@@ -57,6 +59,9 @@ Brain-Segmentation/
 ├── utils/                   # Utility functions
 │   ├── util.py
 │   └── pad_unpad.py
+├── scripts/                 # Utility scripts (e.g., text embeddings)
+│   └── extract_textemb_biobert.py
+│   └── preprocess_qatacov.py
 ├── config.py               # Config file handler
 ├── main.py                 # Training entry point
 └── requirements.txt        # Python dependencies
@@ -99,6 +104,8 @@ Command line arguments implemented in the provided main.py file:
 - `--debug`: Enable debug mode with verbose output (flag)
 - `--eval_metric_type`: Metric type for model selection - `mean` (per-class mean) or `aggregated_mean` (aggregated regions mean) (default: `mean`)
 - `--wandb`: Enable Weights & Biases logging (flag). Run name will be `config.name`. Set project and entity with environment variables: `export WANDB_ENTITY="your_entity"` and `export WANDB_PROJECT="your_project"`
+- `--mixed_precision`: Enable mixed precision training: `fp16` or `bf16` (default: None, so training is performed with FP32 precision)
+- `--seed`: random seed for reproducibility (default: 42)
 
 Example of launch of main.py, training a 3D segmentation model, resuming checkpoints,
 
