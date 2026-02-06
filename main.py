@@ -73,6 +73,13 @@ def parse_args():
         action='store_true',
         help='Enable Weights & Biases logging'
     )    
+    parser.add_argument(
+        '--mixed_precision',
+        type=str,
+        default=None,
+        choices=['fp16', 'bf16'],
+        help='Enable mixed precision: fp16 or bf16 (default: disabled)'
+    )
     return parser.parse_args()
 
 
@@ -104,7 +111,8 @@ def main():
         debug=args.debug,
         eval_metric_type=args.eval_metric_type,
         use_wandb=args.wandb,
-        val_every=args.val_every
+        val_every=args.val_every,
+        mixed_precision=args.mixed_precision
     )
     try:
         trainer_instance.train()
