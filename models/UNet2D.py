@@ -89,10 +89,8 @@ class UNet2D(BaseModel):
                                         up_conv=False)
         self.out_layer = nn.Conv2d(self.size * 2, self.out_channels, kernel_size=1, stride=1, padding=0)
 
-        self.bottleneck_channels = self.size * (2 ** (self.depth + 1))
 
-
-    def forward(self, x, return_bottleneck: bool = False):
+    def forward(self, x):
         #print(self.encoder)
         #print(self.bottleneck)
         #print(self.decoder)
@@ -112,8 +110,7 @@ class UNet2D(BaseModel):
             out, feat = self.encoder[block](out)
             feat_list.append(feat)
 
-        bottleneck = self.bottleneck(out)
-        out = bottleneck
+        out = self.bottleneck(out)
 
         for block in self.decoder:
             out = self.decoder[block](torch.cat((out, feat_list[int(block)]), dim=1))
@@ -124,8 +121,6 @@ class UNet2D(BaseModel):
         if pre_padding:
             out = unpad_2d(out, pads)
 
-        if return_bottleneck:
-            return out, bottleneck
         return out
 
 ''' Example usage
