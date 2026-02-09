@@ -23,9 +23,6 @@ Required methods:
 **Examples:**
 - [ATLAS.py](/datasets/ATLAS.py): 3D segmentation dataset with optional train/val split files or random splitting
 - [BraTS2D.py](/datasets/BraTS2D.py): 2D sliced version extracting axial slices from 3D BraTS volumes
-- [QaTaCov.py](/datasets/QaTaCov.py): 2D chest X-ray dataset (preprocessed)
-- [QaTaCovPreprocess.py](/datasets/QaTaCovPreprocess.py): raw/preprocess dataset loader
-- [QaTaCovTextEmb.py](/datasets/QaTaCovTextEmb.py): 2D chest X-ray dataset with report text embeddings
 
 
 ### Important Note
