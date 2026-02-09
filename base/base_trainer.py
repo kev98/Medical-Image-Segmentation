@@ -1,4 +1,5 @@
 import torch
+from torch.cuda.amp import GradScaler
 from abc import abstractmethod
 from numpy import inf
 
@@ -28,7 +29,7 @@ class BaseTrainer:
     """
     # Mandatory parameters not specified in the config file, must be passed as CL params when calling the main.py
     # If too many params it is possible to specify them in another file
-    def __init__(self, config, epochs, validation, save_path, resume=False, debug=False, eval_metric_type='mean', use_wandb=False, val_every=1, **kwargs):
+    def __init__(self, config, epochs, validation, val_every, save_path, resume=False, debug=False, eval_metric_type='mean', use_wandb=False, mixed_precision=None, **kwargs):
         """
         Initialize the Trainer with model, optimizer, scheduler, loss, metrics and weights using the config file
         """
@@ -39,8 +40,19 @@ class BaseTrainer:
         self.eval_metric_type = eval_metric_type
         self.use_wandb = use_wandb
         self.wandb_run_id = None
+        # Mixed precision setup
+        self.mixed_precision = mixed_precision
+        self.use_amp = self.device.type == 'cuda' and self.mixed_precision in ['fp16', 'bf16']
+        self.amp_dtype = torch.float16 if self.mixed_precision == 'fp16' else torch.bfloat16
+        self.use_scaler = self.device.type == 'cuda' and self.mixed_precision == 'fp16'
+        self.scaler = GradScaler(enabled=self.use_scaler)
 
         self.model = ModelFactory.create_instance(self.config).to(self.device)
+        
+        # Wrap model with DataParallel if n_gpu > 1
+        if self.config.n_gpu > 1 and torch.cuda.device_count() > 1:
+            print(f"Using DataParallel with {torch.cuda.device_count()} GPUs")
+            self.model = torch.nn.DataParallel(self.model)
 
         self.optimizer, self.lr_scheduler = OptimizerFactory.create_instance(self.model, self.config)
 
@@ -187,11 +199,13 @@ class BaseTrainer:
         :param epoch: current epoch number
         :param save_best: if True, save the checkpoint also to 'model_best.pth'
         """
-        # TODO: Se può essere utile altro aggiungere qua
+        # Handle DataParallel wrapper when saving
+        model_to_save = self.model.module if isinstance(self.model, torch.nn.DataParallel) else self.model
+        
         state = {
-            'name': type(self.model).__name__,
+            'name': type(model_to_save).__name__,
             'config': self.config,
-            'model': self.model.state_dict(),
+            'model': model_to_save.state_dict(),
             'optimizer': self.optimizer.state_dict(),
             'lr_scheduler': self.lr_scheduler.state_dict() if self.lr_scheduler is not None else None,
             'epoch': epoch,
@@ -217,7 +231,8 @@ class BaseTrainer:
         checkpoint = torch.load(checkpoint_path, map_location=self.device)
 
         # Load model state
-        self.model.load_state_dict(checkpoint['model'])
+        model_to_load = self.model.module if isinstance(self.model, torch.nn.DataParallel) else self.model
+        model_to_load.load_state_dict(checkpoint['model'])
         print("Model weights loaded.")
 
         # Load optimizer state
